@@ -1,0 +1,171 @@
+@extends('layout.app')
+
+@section('content')
+    @include('layout.partials.breadcrumb', compact('breadcrumb'))
+
+    <!-- Filter Card -->
+    <div class="row">
+        <div class="col">
+            <div class="card card-small mb-1">
+                <div class="card-header border-bottom pb-1 pt-2">
+                    @include('components.tools-filter', ['table_id' => '#main-table'])
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col">
+                            {{ Form::open(['id' => 'form-filter', 'autocomplete' => 'off']) }}
+                            <div class="row">
+                                <div class="col-md-10">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group row mb-1">
+                                                <label for="name"
+                                                    class="col-sm-3 col-form-label">{{ __('Nama') }}</label>
+                                                <div class="col-sm-9">
+                                                    <input type="text" class="form-control" name="name" id="name">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group row mb-1">
+                                                <label for="status"
+                                                    class="col-sm-3 col-form-label">{{ __('Status') }}</label>
+                                                <div class="col-sm-9">
+                                                    <select name="status" class="select2" data-search="false">
+                                                        <option value="">{{ __('Semua') }}</option>
+                                                        <option value="1">{{ __('Aktif') }}</option>
+                                                        <option value="0">{{ __('Tidak Aktif') }}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group row mb-1">
+                                                <label for="code"
+                                                    class="col-sm-3 col-form-label">{{ __('Code') }}</label>
+                                                <div class="col-sm-9">
+                                                    <input type="text" class="form-control" name="code" id="code">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group row mb-1">
+                                                <label for="tipe_penilaian"
+                                                    class="col-sm-3 col-form-label">{{ __('Tipe Penilaian') }}</label>
+                                                <div class="col-sm-9">
+                                                    <select name="tipe_penilaian" class="select2" data-search="false">
+                                                        <option value="">{{ __('Semua') }}</option>
+                                                        <option value="kuantitatif">{{ __('KUANTITATIF') }}</option>
+                                                        <option value="kualitatif">{{ __('KUALITATIF') }}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="submit" class="btn btn-primary w-100 btn-filter">
+                                        <i class="bx bx-filter bx-xs align-middle"></i> Filters
+                                    </button>
+                                </div>
+                            </div>
+                            {!! Form::close() !!}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 text-danger alert alert-danger">
+        Kode Parameter tidak dapat diubah. Apabila ada penyesuaian kode maka diperlukan tambah data dan pemetaan yang lainnya.
+    </div>
+
+    <!-- Table -->
+    <div class="row">
+        <div class="col">
+            <div class="card card-small mb-4">
+                <div class="card-body">
+                    @include('components.datatables', [
+                        'id' => 'main-table',
+                        'form_filter' => '#form-filter',
+                        'header' => ['Code', 'Nama', 'Tipe Penilaian', 'Status'],
+                        'data_source' => route($module . '.data'),
+                    ])
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@include('assets.datatables')
+
+@push('plugin-scripts')
+    <script type="text/javascript">
+        var oTable = $('#main-table').myDataTable({
+            buttons: [{
+                    id: 'add',
+                    url: '{{ route($module . '.create') }}',
+                    modal: '#modal-xl',
+                    className: 'btn btn-primary btn-add',
+                }
+            ],
+            actions: [{
+                    id: 'edit',
+                    url: '{{ route($module . '.edit', ['parameter' => '__grid_doc__']) }}',
+                    modal: '#modal-xl',
+                    className: "btn btn-light p-1 pb-1 btn-edit"
+                },
+                {
+                    id: 'delete',
+                    url: '{{ route($module . '.destroy', ['id' => '__grid_doc__']) }}'
+                },
+                {
+                    id: 'restore',
+                    title: 'Restore Deleted',
+                    url: '{{ route($module . '.restore', ['id' => '__grid_doc__']) }}',
+                    className: 'btn btn-xs btn-outline-success btn-restore p-1 pb-1',
+                    icon: '<i class="bx bx-rotate-left bx-xs"></i>',
+                }
+            ],
+            columns: [
+                {data: 'code', name: 'code'},
+                {data: 'name', name: 'name'},
+                {data: 'tipe_penilaian', name: 'tipe_penilaian'},
+                {data: 'status', name: 'status'},
+                {data: 'action', className: 'text-center'}
+            ],
+            onDraw: function() {
+                initModalAjax('.btn-edit');
+                initDatatableAction($(this), function() {
+                    oTable.reload();
+                });
+            },
+            onComplete: function() {
+                initModalAjax('.btn-add');
+            },
+            customRow: function(row, data) {
+                $('td:eq(3)', row).html(
+                    data.status == '1'
+                        ? '<span class="badge bg-success-subtle text-success text-uppercase">Aktif</span>'
+                        : (data.deleted_at
+                            ? '<span class="badge bg-danger-subtle text-danger text-uppercase">Deleted</span>'
+                            : '<span class="badge bg-danger-subtle text-danger text-uppercase">Tidak Aktif</span>'
+                        )
+                );
+
+                if (data.deleted_at != null) {
+                    $('td:eq(4)', row).find('.btn-edit, .btn-delete').hide();
+                    $('td:eq(4)', row).find('.btn-restore').show();
+                } else {
+                    $('td:eq(4)', row).find('.btn-restore').hide();
+                }
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        $(function() {
+            initPage();
+            initDatatableTools($('#main-table'), oTable);
+        });
+    </script>
+@endpush
