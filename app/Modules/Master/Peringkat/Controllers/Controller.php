@@ -29,9 +29,17 @@ class Controller extends BaseModule
         return $this->serveJSON($result);
     }
 
+    // public function create()
+    // {
+    //     return $this->serveView();
+    // }
     public function create()
     {
-        return $this->serveView();
+        $availableTingkat = Service::getAvailableTingkat();
+
+        return $this->serveView([
+            'availableTingkat' => $availableTingkat,
+        ]);
     }
 
     public function store(Request $request)
@@ -40,11 +48,26 @@ class Controller extends BaseModule
         return $this->serveJSON($result);
     }
 
+    // public function edit($id)
+    // {
+    //     $data = Service::get(decrypt($id));
+    //     return $this->serveView([
+    //         'data' => $data,
+    //     ]);
+    // }
     public function edit($id)
     {
-        $data = Service::get(decrypt($id));
+        $id               = decrypt($id);
+        $data             = Service::get($id);
+        $availableTingkat = Service::getAvailableTingkat($id)
+            ->reject(function ($tingkat) use ($data) {
+                return $tingkat == $data->tingkat;
+            })
+            ->values();
+
         return $this->serveView([
-            'data' => $data,
+            'data'             => $data,
+            'availableTingkat' => $availableTingkat,
         ]);
     }
 

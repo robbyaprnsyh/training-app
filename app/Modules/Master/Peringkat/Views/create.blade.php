@@ -12,11 +12,24 @@
             </div>
         </div>
 
-        <div class="form-group row p-0 mb-1">
+        {{-- <div class="form-group row p-0 mb-1">
             <label for="tingkat" class="col-sm-3 col-form-label">{{ __('Tingkat') }}<sup
                     class="text-danger">*</sup></label>
             <div class="col-sm-9">
                 <input type="number" class="form-control" name="tingkat" id="tingkat" required>
+            </div>
+        </div> --}}
+
+        <div class="form-group row p-0 mb-1">
+            <label for="tingkat" class="col-sm-3 col-form-label">{{ __('Tingkat') }}<sup
+                    class="text-danger">*</sup></label>
+            <div class="col-sm-9">
+                <select class="form-control" name="tingkat" id="tingkat" required>
+                    <option value="">{{ __('Pilih Tingkat') }}</option>
+                    @foreach ($availableTingkat as $tingkat)
+                        <option value="{{ $tingkat }}">{{ $tingkat }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
 

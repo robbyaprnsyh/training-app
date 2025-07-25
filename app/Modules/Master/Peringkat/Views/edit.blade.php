@@ -13,14 +13,27 @@
             </div>
         </div>
 
-        <div class="form-group row p-0 mb-1">
+        {{-- <div class="form-group row p-0 mb-1">
             <label for="tingkat" class="col-sm-3 col-form-label">{{ __('Tingkat') }}<sup
                     class="text-danger">*</sup></label>
             <div class="col-sm-9">
                 <input type="number" class="form-control" name="tingkat" id="tingkat" value="{{ $data->tingkat }}">
             </div>
-        </div>
+        </div> --}}
 
+        <div class="form-group row p-0 mb-1">
+            <label for="tingkat" class="col-sm-3 col-form-label">{{ __('Tingkat') }}<sup
+                    class="text-danger">*</sup></label>
+            <div class="col-sm-9">
+                <select class="form-control" name="tingkat" id="tingkat" required>
+                    <option value="{{ $data->tingkat }}" selected>{{ $data->tingkat }}</option>
+                    @foreach ($availableTingkat as $tingkat)
+                        <option value="{{ $tingkat }}">{{ $tingkat }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        
         <div class="form-group row p-0 mb-1">
             <label for="color" class="col-sm-3 col-form-label">{{ __('Color') }}<sup
                     class="text-danger">*</sup></label>

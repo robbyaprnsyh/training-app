@@ -101,4 +101,13 @@ class Service extends BaseService
             });
         });
     }
+
+    public static function getAvailableTingkat($excludeId = null)
+    {
+        $used = Model::when($excludeId, function ($q) use ($excludeId) {
+            $q->where('id', '!=', $excludeId);
+        })->pluck('tingkat')->map(fn($v) => (int) $v)->toArray();
+
+        return collect(range(1, 5))->diff($used)->values();
+    }
 }

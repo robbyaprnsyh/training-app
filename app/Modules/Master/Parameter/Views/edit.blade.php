@@ -167,7 +167,7 @@
 
 @endsection
 
-@push('plugin-scripts')
+{{-- @push('plugin-scripts')
     <script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
 
     <script type="text/javascript">
@@ -335,6 +335,203 @@
 
             $('form#my-form').submit(function(e) {
                 e.preventDefault();
+                $(this).myAjax({
+                    waitMe: '.modal-content',
+                    success: function(data) {
+                        $('.modal').modal('hide');
+                        oTable.reload();
+                    }
+                }).submit();
+            });
+        });
+    </script>
+@endpush --}}
+
+@push('plugin-scripts')
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
+
+    <script type="text/javascript">
+        $(function() {
+            initPage();
+
+            let index = {{ count($data->rangeKuantitatif ?? []) }};
+            let kualitatifIndex = {{ count($data->pilihanKualitatif ?? []) }};
+
+            function initTinyMCE(selector, content = '') {
+                const id = selector.replace('#', '');
+                if (tinymce.get(id)) tinymce.get(id).remove();
+                setTimeout(() => {
+                    tinymce.init({
+                        selector: selector,
+                        menubar: false,
+                        plugins: 'lists',
+                        toolbar: 'undo redo | bold italic underline | bullist numlist | alignleft aligncenter alignright',
+                        valid_elements: '*[*]',
+                        height: 150,
+                        branding: false,
+                        statusbar: false,
+                        setup: function(editor) {
+                            editor.on('init', function() {
+                                setTimeout(() => {
+                                    editor.setContent(content);
+                                }, 100);
+                            });
+                        }
+                    });
+                }, 200);
+            }
+
+            function filterPeringkatOptions(containerSelector) {
+                let selectedValues = [];
+                $(`${containerSelector} select[name*="[peringkat_id]"]`).each(function() {
+                    let val = $(this).val();
+                    if (val) selectedValues.push(val);
+                });
+
+                $(`${containerSelector} select[name*="[peringkat_id]"] option`).show();
+                $(`${containerSelector} select[name*="[peringkat_id]"]`).each(function() {
+                    let currentSelect = $(this);
+                    selectedValues.forEach(function(val) {
+                        if (currentSelect.val() != val) {
+                            currentSelect.find(`option[value="${val}"]`).hide();
+                        }
+                    });
+                });
+            }
+
+            function toggleAddButton(containerSelector, buttonSelector) {
+                let totalForms = $(
+                    `${containerSelector} .range-kuantitatif, ${containerSelector} .pilihan-kualitatif`).length;
+                if (totalForms >= 5) {
+                    $(buttonSelector).hide();
+                } else {
+                    $(buttonSelector).show();
+                }
+            }
+
+            function generateRangeKuantitatifForm(i) {
+                return `
+            <div class="border rounded p-2 mb-2 range-kuantitatif">
+                <div class="text-end mb-1">
+                    <button type="button" class="btn btn-sm btn-danger remove-range"><i class="bi bi-trash"></i></button>
+                </div>
+                <input type="hidden" name="range_kuantitatif[${i}][id]" value="">
+                <div class="form-group row p-0 mb-1">
+                    <label class="col-sm-3 col-form-label">Peringkat</label>
+                    <div class="col-sm-9">
+                        <select name="range_kuantitatif[${i}][peringkat_id]" class="form-control" required>
+                            <option value="">Pilih Peringkat</option>
+                            @foreach ($peringkat as $item)
+                                <option value="{{ $item->id }}">{{ $item->label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row p-0 mb-1">
+                    <label class="col-sm-3 col-form-label">Min Range</label>
+                    <div class="col-md-3">
+                        <select name="range_kuantitatif[${i}][operator_min]" class="form-control" required>
+                            <option value="">Pilih</option>
+                            <option value=">">&gt;</option>
+                            <option value=">=">&ge;</option>
+                            <option value="=">=</option>
+                            <option value="<">&lt;</option>
+                            <option value="<=">&le;</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" step="0.01" class="form-control" name="range_kuantitatif[${i}][nilai_min]" placeholder="Nilai Min">
+                    </div>
+                </div>
+                <div class="form-group row p-0 mb-1">
+                    <label class="col-sm-3 col-form-label">Max Range</label>
+                    <div class="col-md-3">
+                        <select name="range_kuantitatif[${i}][operator_max]" class="form-control" required>
+                            <option value="">Pilih</option>
+                            <option value=">">&gt;</option>
+                            <option value=">=">&ge;</option>
+                            <option value="=">=</option>
+                            <option value="<">&lt;</option>
+                            <option value="<=">&le;</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" step="0.01" class="form-control" name="range_kuantitatif[${i}][nilai_max]" placeholder="Nilai Max">
+                    </div>
+                </div>
+            </div>`;
+            }
+
+            function generateRangeKualitatifForm(i) {
+                const textareaId = `analisa-${i}`;
+                return `
+            <div class="border rounded p-2 mb-2 pilihan-kualitatif">
+                <div class="text-end mb-1">
+                    <button type="button" class="btn btn-sm btn-danger remove-kualitatif"><i class="bi bi-trash"></i></button>
+                </div>
+                <input type="hidden" name="pilihan_kualitatif[${i}][id]" value="">
+                <div class="row mb-2">
+                    <div class="col-md-8">
+                        <textarea class="form-control analisa" name="pilihan_kualitatif[${i}][analisa_default]" id="${textareaId}" placeholder="Analisa / Jawaban"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <select name="pilihan_kualitatif[${i}][peringkat_id]" class="form-control" required>
+                            <option value="">Pilih Peringkat</option>
+                            @foreach ($peringkat as $item)
+                                <option value="{{ $item->id }}">{{ $item->label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>`;
+            }
+
+            $('#add-range').click(function() {
+                $('#dynamic-form-penilaian').append(generateRangeKuantitatifForm(index));
+                index++;
+                filterPeringkatOptions('#dynamic-form-penilaian');
+                toggleAddButton('#dynamic-form-penilaian', '#add-range');
+            });
+
+            $('#add-kualitatif').click(function() {
+                $('#dynamic-form-penilaian').append(generateRangeKualitatifForm(kualitatifIndex));
+                initTinyMCE(`#analisa-${kualitatifIndex}`);
+                kualitatifIndex++;
+                filterPeringkatOptions('#dynamic-form-penilaian');
+                toggleAddButton('#dynamic-form-penilaian', '#add-kualitatif');
+            });
+
+            $(document).on('click', '.remove-range', function() {
+                $(this).closest('.range-kuantitatif').remove();
+                filterPeringkatOptions('#dynamic-form-penilaian');
+                toggleAddButton('#dynamic-form-penilaian', '#add-range');
+            });
+
+            $(document).on('click', '.remove-kualitatif', function() {
+                const textarea = $(this).closest('.pilihan-kualitatif').find('textarea');
+                const id = textarea.attr('id');
+                if (tinymce.get(id)) tinymce.get(id).remove();
+                $(this).closest('.pilihan-kualitatif').remove();
+                filterPeringkatOptions('#dynamic-form-penilaian');
+                toggleAddButton('#dynamic-form-penilaian', '#add-kualitatif');
+            });
+
+            // Inisialisasi TinyMCE untuk analisa yang sudah ada
+            @if ($data->tipe_penilaian == 'KUALITATIF')
+                @foreach ($data->pilihanKualitatif as $i => $range)
+                    initTinyMCE('#analisa-{{ $i }}', {!! json_encode($range->analisa_default) !!});
+                @endforeach
+            @endif
+
+            // Filter peringkat awal
+            filterPeringkatOptions('#dynamic-form-penilaian');
+            toggleAddButton('#dynamic-form-penilaian', '#add-range');
+            toggleAddButton('#dynamic-form-penilaian', '#add-kualitatif');
+
+            // Form Submit
+            $('form#my-form').submit(function(e) {
+                e.preventDefault();
+                tinymce.triggerSave();
                 $(this).myAjax({
                     waitMe: '.modal-content',
                     success: function(data) {
