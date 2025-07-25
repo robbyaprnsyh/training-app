@@ -25,7 +25,7 @@
         <div class="form-group row p-0 mb-1">
             <label for="tipe_penilaian" class="col-sm-3 col-form-label">{{ __('Tipe Penilaian') }}</label>
             <div class="col-sm-9">
-                <select class="form-control" name="tipe_penilaian" id="tipe_penilaian" readonly disabled>
+                <select class="form-control" name="tipe_penilaian" id="tipe_penilaian">
                     <option value="" disabled>Pilih</option>
                     <option value="KUANTITATIF" {{ $data->tipe_penilaian == 'KUANTITATIF' ? 'selected' : '' }}>KUANTITATIF
                     </option>
