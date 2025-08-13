@@ -6,4 +6,6 @@ return [
     'Jabatan',
     'Peringkat',
     'Parameter',
+    'Penilaian',
+    'Bobotparameter',
 ];

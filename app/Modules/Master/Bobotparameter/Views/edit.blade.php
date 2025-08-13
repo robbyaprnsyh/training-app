@@ -4,34 +4,56 @@
 
 @section('content')
 
-    {{ Form::open(['id' => 'my-form', 'route' => [$module . '.update', encrypt($data->code)], 'method' => 'put', 'autocomplete' => 'off']) }}
+    {{ Form::open(['id' => 'my-form', 'route' => [$module . '.update', encrypt($data->id)], 'method' => 'put', 'autocomplete' => 'off']) }}
     <div class="modal-body pb-2">
         <div class="form-group row p-0 mb-1">
-            <label for="name" class="col-sm-3 col-form-label">{{ __('Nama Jabatan') }}<sup
-                    class="text-danger">*</sup></label>
+            <label for="label" class="col-sm-3 col-form-label">{{ __('Label') }}<sup class="text-danger">*</sup></label>
             <div class="col-sm-9">
-                <input type="text" class="form-control " name="name" id="name" value="{{ $data->name }}">
+                <input type="text" class="form-control" name="label" id="label" value="{{ $data->label }}">
             </div>
         </div>
+
+        {{-- <div class="form-group row p-0 mb-1">
+            <label for="tingkat" class="col-sm-3 col-form-label">{{ __('Tingkat') }}<sup
+                    class="text-danger">*</sup></label>
+            <div class="col-sm-9">
+                <input type="number" class="form-control" name="tingkat" id="tingkat" value="{{ $data->tingkat }}">
+            </div>
+        </div> --}}
+
         <div class="form-group row p-0 mb-1">
-            <label for="code" class="col-sm-3 col-form-label">{{ __('Code') }}<sup
+            <label for="tingkat" class="col-sm-3 col-form-label">{{ __('Tingkat') }}<sup
                     class="text-danger">*</sup></label>
             <div class="col-sm-9">
-                <input type="text" class="form-control " name="code" id="code" value="{{ $data->code }}" readonly>
+                <select class="form-control" name="tingkat" id="tingkat" required>
+                    <option value="{{ $data->tingkat }}" selected>{{ $data->tingkat }}</option>
+                    @foreach ($availableTingkat as $tingkat)
+                        <option value="{{ $tingkat }}">{{ $tingkat }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
+        
+        <div class="form-group row p-0 mb-1">
+            <label for="color" class="col-sm-3 col-form-label">{{ __('Color') }}<sup
+                    class="text-danger">*</sup></label>
+            <div class="col-sm-9">
+                <input type="color" class="form-control w-50" name="color" id="color" value="{{ $data->color }}">
+            </div>
+        </div>
+
         <div class="form-group row p-0 mb-1">
             <label class="col-sm-3 col-form-label">{{ __('Status') }}</label>
             <div class="col-sm-9">
                 <div class="form-check form-switch mb-1 mt-2">
                     <input type="checkbox" id="" name="status" value="1" class="form-check-input"
-                        {{ $data->status == '1' ? 'checked="checked"' : '' }} data-text-on="{{ __('Aktif') }}"
-                        data-text-off="{{ __('Tidak Aktif') }}">
+                        checked="checked" data-text-on="{{ __('Aktif') }}" data-text-off="{{ __('Tidak Aktif') }}">
                     <label class="custom-control-label text-muted" for="status"></label>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="modal-footer">
         <button type="button" class="btn btn-light" data-bs-dismiss="modal">{{ __('Tutup') }}</button>
         <button type="submit" class="btn btn-primary">{{ __('Simpan') }}</button>

@@ -48,7 +48,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-2">
-                                    <button type="submit" class="btn btn-primary w-100 btn-filter"> 
+                                    <button type="submit" class="btn btn-primary w-100 btn-filter">
                                         <i class="bx bx-filter bx-xs align-middle"></i>
                                         Filters
                                     </button>
@@ -90,7 +90,7 @@
             {
                 id: 'add',
                 url: '{{ route($module . ".create") }}',
-                modal: '#modal-xl',
+                modal: '#modal-lg',
                 className: 'btn btn-primary btn-add',
             },
             {
@@ -107,7 +107,7 @@
             {
                 id : 'edit',
                 url: '{{ route($module . '.edit', ['unitkerja' => '__grid_doc__']) }}',
-                modal: '#modal-xl',
+                modal: '#modal-lg',
                 className: "btn btn-light p-1 pb-1 btn-edit"
             },
             {

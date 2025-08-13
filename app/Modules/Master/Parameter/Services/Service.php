@@ -16,6 +16,8 @@ class Service extends BaseService
     public function data(array $data)
     {
         $query = Model::withTrashed()->data();
+        // $query = Model::withTrashed()->data()
+        //     ->orderByRaw("CAST(regexp_replace(name, '\\D+', '', 'g') AS INTEGER)");
 
         return DataTables::of($query)
             ->filter(function ($query) use ($data) {
@@ -100,7 +102,7 @@ class Service extends BaseService
                 'name'           => $data['name'],
                 'tipe_penilaian' => 'KUANTITATIF',
                 'status'         => isset($data['status']) && $data['status'] == '1' ? 1 : 0,
-            ], function ($query,  $event , $cursor) use ($data) {
+            ], function ($query, $event, $cursor) use ($data) {
                 $existing = ModelKuantitatif::where('parameter_id', $cursor->id)->get()->keyBy('id');
                 $incoming = collect($data['range_kuantitatif'])->keyBy(function ($item) {
                     return $item['id'] ?? (string) Str::uuid();

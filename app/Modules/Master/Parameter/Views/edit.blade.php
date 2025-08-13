@@ -529,9 +529,53 @@
             toggleAddButton('#dynamic-form-penilaian', '#add-kualitatif');
 
             // Form Submit
+            // $('form#my-form').submit(function(e) {
+            //     e.preventDefault();
+            //     tinymce.triggerSave();
+            //     $(this).myAjax({
+            //         waitMe: '.modal-content',
+            //         success: function(data) {
+            //             $('.modal').modal('hide');
+            //             oTable.reload();
+            //         }
+            //     }).submit();
+            // });
+
             $('form#my-form').submit(function(e) {
                 e.preventDefault();
                 tinymce.triggerSave();
+
+                // Hitung jumlah form dinamis
+                const jumlahKuantitatif = $('.range-kuantitatif').length;
+                const jumlahKualitatif = $('.pilihan-kualitatif').length;
+
+                if (jumlahKuantitatif < 5 && jumlahKualitatif < 5) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Jumlah Form Kurang',
+                        text: 'Minimal harus ada 5 form kuantitatif atau kualitatif!',
+                    });
+                    return;
+                }
+
+                if (jumlahKuantitatif > 0 && jumlahKuantitatif < 5) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Form Kuantitatif Belum Lengkap',
+                        text: 'Form kuantitatif harus berjumlah tepat 5!',
+                    });
+                    return;
+                }
+
+                if (jumlahKualitatif > 0 && jumlahKualitatif < 5) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Form Kualitatif Belum Lengkap',
+                        text: 'Form kualitatif harus berjumlah tepat 5!',
+                    });
+                    return;
+                }
+
                 $(this).myAjax({
                     waitMe: '.modal-content',
                     success: function(data) {

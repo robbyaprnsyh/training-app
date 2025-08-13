@@ -82,7 +82,7 @@
             buttons: [{
                     id: 'add',
                     url: '{{ route($module . '.create') }}',
-                    modal: '#modal-xl',
+                    modal: '#modal-lg',
                     className: 'btn btn-primary btn-add',
                 },
                 {
@@ -98,7 +98,7 @@
             actions: [{
                     id: 'edit',
                     url: '{{ route($module . '.edit', ['peringkat' => '__grid_doc__']) }}',
-                    modal: '#modal-xl',
+                    modal: '#modal-lg',
                     className: "btn btn-light p-1 pb-1 btn-edit"
                 },
                 {
