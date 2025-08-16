@@ -5,6 +5,7 @@ use App\Bases\BaseModule;
 use App\Modules\Master\Bobotparameter\Repository;
 use App\Modules\Master\Bobotparameter\Service;
 use Illuminate\Http\Request;
+use App\Modules\Master\Bobotparameter\Model as ModelBobotparameter;
 
 class Controller extends BaseModule
 {
@@ -21,8 +22,11 @@ class Controller extends BaseModule
     {
         activity('Akses menu')->log('Akses menu ' . $this->pageTitle);
         $parameters = \App\Modules\Master\Parameter\ModelParameter::all();
+        $bobot = ModelBobotparameter::pluck('bobot', 'parameter_id')->toArray();
+
         return $this->serveView([
             'parameters' => $parameters,
+            'bobot' => $bobot,
         ]);
     }
 

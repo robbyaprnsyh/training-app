@@ -52,7 +52,6 @@
         </div>
     </div> --}}
 
-
     <!-- Table -->
     <div class="row">
         <div class="col">
@@ -116,7 +115,7 @@
                                                     {{ $param->name }}
                                                 </a>
                                             @else
-                                                @if ($param->penilaian_status == 0)
+                                                @if ($param->penilaian_status == false)
                                                     <a href="{!! route($module . '.edit', ['penilaian' => encrypt($param->penilaian_id), 'parameter_id' => $param->id]) !!}" class="open-nilai-modal"
                                                         data-bs-toggle="modal" data-bs-target="#modal-lg"
                                                         data-parameter-id="{{ $param->id }}"
@@ -124,7 +123,7 @@
                                                         {{ $param->name }}
                                                     </a>
                                                 @else
-                                                    <span class="text-muted">{{ $param->name }}</span>
+                                                    <span class="text-dark">{{ $param->name }}</span>
                                                 @endif
                                             @endif
                                         </td>

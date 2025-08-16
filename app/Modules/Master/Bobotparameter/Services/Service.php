@@ -81,7 +81,6 @@ class Service extends BaseService
     public function destroy(array $data)
     {
         return Model::deleteOne($data['id'], function ($query, $event, $cursor) {
-            // bisa tambahkan aksi tambahan jika dibutuhkan
         });
     }
 

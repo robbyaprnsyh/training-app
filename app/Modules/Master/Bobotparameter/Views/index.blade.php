@@ -29,7 +29,8 @@
                                                 <input type="number"
                                                     class="form-control form-control-sm text-end input-bobot"
                                                     name="bobot[{{ $param->id }}]" step="0.01" min="0"
-                                                    max="100" value="{{ old('bobot.' . $param->id) ?? '0.00' }}">
+                                                    max="100"
+                                                    value="{{ old('bobot.' . $param->id, isset($bobot[$param->id]) ? number_format($bobot[$param->id], 2, '.', '') : '0.00') }}">
                                             </td>
                                         </tr>
                                     @endforeach
@@ -72,7 +73,7 @@
                 let val = parseFloat($(this).val()) || 0;
                 total += val;
             });
-            $('#total-bobot').text(total.toFixed(2));
+            $('#total-bobot').text(total.toFixed());
             return total;
         }
 
@@ -100,6 +101,24 @@
                         icon: 'error',
                         title: 'Total Bobot Harus 100%',
                         text: 'Silakan sesuaikan nilai bobot.',
+                    });
+                    return;
+                }
+
+                // Validasi nilai bobot harus sama
+                let bobotList = [];
+                $('.input-bobot').each(function() {
+                    bobotList.push(parseFloat($(this).val()) || 0);
+                });
+
+                let firstValue = bobotList[0];
+                let allEqual = bobotList.every(v => v === firstValue);
+
+                if (!allEqual) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Bobot Harus Sama',
+                        text: 'Semua bobot parameter harus memiliki nilai yang sama.',
                     });
                     return;
                 }

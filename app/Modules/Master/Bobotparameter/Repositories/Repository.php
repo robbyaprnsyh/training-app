@@ -14,7 +14,7 @@ class Repository extends BaseRepository
     {
         $this->data = [
             'id'           => $request('_id'),
-            'bobot'        => $request('bobot'), // array of bobot [parameter_id => value]
+            'bobot'        => $request('bobot'),
         ];
     }
 
